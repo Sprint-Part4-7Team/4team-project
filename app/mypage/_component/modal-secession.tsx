@@ -1,8 +1,8 @@
 import Modal from "@/components/modal/modal";
 import { deleteAccount } from "@/lib/apis/user";
+import { deleteCookie } from "@/lib/cookies/cookieAction";
 import { showToast } from "@/lib/show-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCookie } from "cookies-next";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 import { toast } from "react-toastify";
@@ -28,10 +28,10 @@ export default function ModalSecession({ close }: ModalWarningProps) {
       });
       close();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       router.push("/");
-      deleteCookie("accessToken");
-      deleteCookie("refreshToken");
+      await deleteCookie("accessToken");
+      await deleteCookie("refreshToken");
       queryClient.invalidateQueries({ queryKey: ["getUser"] });
       router.refresh();
       toast.update("deleteAccount", {

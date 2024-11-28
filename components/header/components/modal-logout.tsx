@@ -1,6 +1,6 @@
 import Modal from "@/components/modal/modal";
+import { deleteCookie } from "@/lib/cookies/cookieAction";
 import { useQueryClient } from "@tanstack/react-query";
-import { deleteCookie } from "cookies-next";
 import { useRouter } from "next-nprogress-bar";
 import { useCallback } from "react";
 
@@ -12,10 +12,10 @@ export default function ModalLogout({ close }: ModalLogoutProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     router.push("/");
-    deleteCookie("accessToken");
-    deleteCookie("refreshToken");
+    await deleteCookie("accessToken");
+    await deleteCookie("refreshToken");
     queryClient.invalidateQueries({ queryKey: ["getUser"] });
     router.refresh();
     close();

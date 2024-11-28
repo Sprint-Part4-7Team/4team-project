@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from "cookies-next";
+import { getCookie, setCookie } from "@/lib/cookies/cookieAction";
 
 import { PostAuthRefreshTokenResponse } from "../type";
 import type { MyFetchOptions } from "./types";
@@ -38,11 +38,10 @@ export async function clientFetch(
   input: string | URL | globalThis.Request,
   init?: MyFetchOptions,
 ) {
-  const accessToken = getCookie("accessToken");
-
   let newInit = init;
 
   if (newInit?.withCredentials === true) {
+    const accessToken = await getCookie("accessToken");
     const headers = new Headers(init?.headers);
     headers.set("Authorization", `Bearer ${accessToken}`);
     newInit = { ...init, headers };
@@ -51,7 +50,7 @@ export async function clientFetch(
   const res = await fetch(input, newInit);
 
   if (res.status === 401) {
-    const refreshTokenValue = getCookie("refreshToken");
+    const refreshTokenValue = await getCookie("refreshToken");
     if (refreshTokenValue) {
       const newAccessToken = await fetch(
         `${process.env.NEXT_PUBLIC_KKOM_KKOM_URL}/auth/refresh-token`,
@@ -68,7 +67,9 @@ export async function clientFetch(
       if (newAccessToken.ok) {
         const newAccessTokenValue: PostAuthRefreshTokenResponse =
           await newAccessToken.json();
-        setCookie("accessToken", newAccessTokenValue.accessToken);
+        await setCookie("accessToken", newAccessTokenValue.accessToken, {
+          maxAge: 60 * 60,
+        });
         const headers = new Headers(init?.headers);
         headers.set(
           "Authorization",

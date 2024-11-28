@@ -12,6 +12,7 @@ export default function ArticleRankingChart() {
     page: "1",
     keyword: "",
   });
+
   return (
     <ol className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-10 gap-1.5 gap-x-10 rounded-xl border border-black border-opacity-10 bg-background-secondary p-5 text-text-primary dark:border dark:border-white dark:border-opacity-10 md:grid-cols-2 md:grid-rows-5">
       {articles.list.map((article, i) => (

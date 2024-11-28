@@ -1,12 +1,11 @@
-import { hasCookie } from "cookies-next";
-import { cookies } from "next/headers";
+import { hasCookie } from "@/lib/cookies/cookieAction";
 import Image from "next/image";
 
 import LinkButton from "../button/link-button";
 import LoggedInButton from "./logged-in-button";
 
-export default function LandingHeader() {
-  const isLoggedIn = hasCookie("refreshToken", { cookies });
+export default async function LandingHeader() {
+  const isLoggedIn = await hasCookie("refreshToken");
 
   return (
     <section className="relative h-[547px] w-full xl:mx-auto xl:max-w-[1920px]">

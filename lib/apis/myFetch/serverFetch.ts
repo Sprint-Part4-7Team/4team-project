@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { getCookie, setCookie } from "@/lib/cookies/cookieAction";
 
 import { PostAuthRefreshTokenResponse } from "../type";
 import { responseError } from "./error";
@@ -10,9 +10,7 @@ export default async function serverFetch(
   input: string | URL | globalThis.Request,
   init?: MyFetchOptions,
 ) {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-
+  const accessToken = await getCookie("accessToken");
   let newInit = init;
 
   if (newInit?.withCredentials === true) {
@@ -24,7 +22,7 @@ export default async function serverFetch(
   const res = await fetch(input, newInit);
 
   if (res.status === 401) {
-    const refreshTokenValue = cookieStore.get("refreshToken")?.value;
+    const refreshTokenValue = await getCookie("refreshToken");
     if (refreshTokenValue) {
       const newAccessToken = await fetch(
         `${process.env.NEXT_PUBLIC_KKOM_KKOM_URL}/auth/refresh-token`,
@@ -41,6 +39,9 @@ export default async function serverFetch(
       if (newAccessToken.ok) {
         const newAccessTokenValue: PostAuthRefreshTokenResponse =
           await newAccessToken.json();
+        await setCookie("accessToken", newAccessTokenValue.accessToken, {
+          maxAge: 60 * 60,
+        });
         const headers = new Headers(init?.headers);
         headers.set(
           "Authorization",

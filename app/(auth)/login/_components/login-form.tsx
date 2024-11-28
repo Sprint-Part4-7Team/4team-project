@@ -6,11 +6,11 @@ import PasswordInput from "@/components/input-field/password-input";
 import { useCustomOverlay } from "@/hooks/use-custom-overlay";
 import { login } from "@/lib/apis/auth";
 import { PostAuthSigninResponse } from "@/lib/apis/type";
+import { setCookie } from "@/lib/cookies/cookieAction";
 import { loginSchema } from "@/schemas/auth";
 import { LoginInputValue } from "@/type/user";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
-import { setCookie } from "cookies-next";
 import { useRouter } from "next-nprogress-bar";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -41,9 +41,9 @@ export default function LoginForm() {
       const response = (await login(data)) as PostAuthSigninResponse;
       return response;
     },
-    onSuccess: (response: PostAuthSigninResponse) => {
-      setCookie("accessToken", response.accessToken, { maxAge: 60 * 60 });
-      setCookie("refreshToken", response.refreshToken, {
+    onSuccess: async (response: PostAuthSigninResponse) => {
+      await setCookie("accessToken", response.accessToken, { maxAge: 60 * 60 });
+      await setCookie("refreshToken", response.refreshToken, {
         maxAge: 60 * 60 * 24 * 7,
       });
       // NOTE - 로그인 후 랜딩으로 리다이렉트를 위해 push 헤더 업데이트를 위해 refresh

@@ -3,9 +3,9 @@
 import { oauthLogin } from "@/lib/apis/auth";
 import { myFetch } from "@/lib/apis/myFetch";
 import { GetGoogleTokenResponse } from "@/lib/apis/type";
+import { setCookie } from "@/lib/cookies/cookieAction";
 import { showToast } from "@/lib/show-toast";
 import { useMutation } from "@tanstack/react-query";
-import { setCookie } from "cookies-next";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -59,9 +59,9 @@ export default function AuthRedirect({ provider }: AuthRedirectProps) {
 
       return oauthLogin(state, finalCode, provider);
     },
-    onSuccess: (response) => {
-      setCookie("accessToken", response.accessToken, { maxAge: 60 * 60 });
-      setCookie("refreshToken", response.refreshToken);
+    onSuccess: async (response) => {
+      await setCookie("accessToken", response.accessToken, { maxAge: 60 * 60 });
+      await setCookie("refreshToken", response.refreshToken);
       router.push("/");
       router.refresh();
     },

@@ -1,9 +1,9 @@
+import { getCookie } from "@/lib/cookies/cookieAction";
 import {
   ResetPasswordInputValue,
   SendEmailInputValue,
   UpdateUserInputValue,
 } from "@/type/user";
-import { getCookie } from "cookies-next";
 
 import instance from "../myFetch/instance";
 import {
@@ -26,7 +26,7 @@ export async function getUser(): Promise<GetUserResponse> {
 
 // NOTE - 유저가 포함한 그룹 조회
 export async function gerUserGroups(): Promise<GetUserGroups> {
-  const accessToken = getCookie("accessToken");
+  const accessToken = await getCookie("accessToken");
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_KKOM_KKOM_URL}/user/groups`,
